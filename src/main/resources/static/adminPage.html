@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Main Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <!-- Navbar brand -->
+        <a class="navbar-brand" href="/main">Chat GPT App</a>
+
+        <!-- Navbar toggler -->
+        <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+                data-target="#navbarNav" data-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <!-- Chat link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/chat">채팅하기</a>
+                </li>
+                <!-- Chat log link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/chatLog">채팅로그</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload">학생 명부 업로드</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/adminPage">관리자 페이지</a>
+                </li>
+
+
+            </ul>
+
+
+            <div id="userInfo" class="text-black p-2 rounded" style="background-color: #d3d3d3; margin-right: 10px;">
+
+            </div>
+
+            <!-- Logout button -->
+            <form class="form-inline my-2 my-lg-0">
+                <button class="btn btn-outline-danger my-2 my-sm-0" type="button" onclick="logout()">로그아웃</button>
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<!-- Content area -->
+<div class="container mt-4">
+    <h2>관리자 페이지</h2>
+
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            <button class="btn btn-danger mb-2" onclick="deleteSelectedUsers()">선택한 사용자 삭제</button>
+        </div>
+    </div>
+
+
+    <!-- 사용자 목록 테이블 -->
+    <div id="userListTable" style="display: none;">
+        <h3>사용자 목록</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th>학번</th>
+                <th>이름</th>
+                <th>권한</th>
+                <th>현재 사용 토큰</th>
+                <th>유저별 최대 토큰</th>
+                <th>토큰 제한 설정</th>
+            </tr>
+            </thead>
+            <tbody id="userList">
+
+            </tbody>
+        </table>
+
+        <button id="saveButton" class="btn btn-success mb-2 float-right" style="display: none;" onclick="saveTokenLimits()">저장</button>
+    </div>
+</div>
+
+<!-- Bootstrap JS (jQuery is required) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- xlsx library for reading excel files -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+<script>
+    // 페이지가 로드될 때 호출되는 함수
+    window.onload = function() {
+        // 서버에서 loggedInUser 정보를 가져옴
+        fetch('/api/userInfo')
+            .then(response => response.json())
+            .then(data => {
+                // 받아온 정보가 있는지 확인
+                if (data) {
+                    // loggedInUser 정보를 userInfo div에 표시
+                    document.getElementById('userInfo').innerHTML = '학번 : ' + data.userId + ', 이름: ' + data.username;
+                } else {
+                    // 만약 정보가 없으면 표시하지 않음
+                    document.getElementById('userInfo').innerHTML = '정보가 없습니다.';
+                }
+            })
+            .catch(error => console.error('오류 발생:', error));
+        displayUserList();
+    };
+</script>
+
+
+<script>
+    // 사용자 목록 보기 함수
+    function displayUserList() {
+        fetch('/api/userList') // 서버의 엔드포인트를 호출
+            .then(response => response.json()) // JSON 형태로 응답을 파싱
+            .then(users => {
+                const userListTable = document.getElementById('userList');
+                userListTable.innerHTML = ''; // 테이블 초기화
+                users.forEach(user => {
+                    const row = `
+                        <tr>
+                            <td><input type="checkbox" class="userCheckbox" data-id="${user.userId.toString()}"></td>
+                            <td>${user.userId}</td>
+                            <td>${user.username}</td>
+                            <td>${user.role}</td>
+                            <td>${user.usedToken}</td>
+                            <td>${user.maxToken}</td>
+                            <td>
+                                <select id="tokenLimit_${user.userId}">
+                                    <option value="0">0</option>
+                                    <option value="10000">10000</option>
+                                    <option value="20000">20000</option>
+                                    <option value="30000">30000</option>
+                                    <option value="40000">40000</option>
+                                    <option value="50000">50000</option>
+                                    <option value="60000">60000</option>
+                                    <option value="70000">70000</option>
+                                    <option value="80000">80000</option>
+                                    <option value="90000">90000</option>
+                                    <option value="100000">100000</option>
+                                    <option value="110000">110000</option>
+                                    <option value="120000">120000</option>
+                                    <!-- 필요한 만큼 옵션을 추가 -->
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                    userListTable.innerHTML += row;
+                });
+
+                // 사용자 목록을 보이도록 변경
+                document.getElementById('userListTable').style.display = 'block';
+                // 저장 버튼을 표시
+                document.getElementById('saveButton').style.display = 'block';
+            })
+            .catch(error => console.error('오류 발생:', error));
+    }
+
+    // 선택한 사용자 삭제 함수
+    function deleteSelectedUsers() {
+        const checkboxes = document.getElementsByClassName('userCheckbox');
+        const selectedUsers = [];
+
+        // 체크된 사용자 아이디를 배열에 추가
+        Array.from(checkboxes).forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedUsers.push(parseInt(checkbox.getAttribute('data-id'))); // 아이디를 정수형으로 변환하여 추가
+            }
+        });
+
+        // 선택된 사용자가 있는지 확인 후 삭제 요청
+        if (selectedUsers.length > 0) {
+            fetch('/api/deleteUsers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedUsers) // 배열 형태로 보내기
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 삭제 성공 시 사용자 목록을 다시 불러오기
+                        alert("삭제되었습니다.");
+                        displayUserList();
+                    } else {
+                        console.error('사용자 삭제 실패');
+                    }
+                })
+                .catch(error => console.error('오류 발생:', error));
+        } else {
+            alert('선택된 사용자가 없습니다.');
+        }
+    }
+
+    // 토큰 제한 설정 저장 함수
+    function saveTokenLimits() {
+        const checkboxes = document.getElementsByClassName('userCheckbox');
+        const tokenLimits = {};
+
+        // 체크된 사용자의 토큰 제한 설정 값을 객체에 저장
+        Array.from(checkboxes).forEach(checkbox => {
+            if (checkbox.checked) {
+                const userId = checkbox.getAttribute('data-id');
+                const limit = document.getElementById(`tokenLimit_${userId}`).value;
+                tokenLimits[userId] = limit;
+            }
+        });
+
+        if (Object.keys(tokenLimits).length === 0) {
+            alert('사용자를 선택해 주세요.');
+            return;
+        }
+
+        // 서버로 전송하여 DB에 저장
+        fetch('/api/saveTokenLimits', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tokenLimits)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('토큰 제한 설정이 저장되었습니다.');
+                } else {
+                    console.error('토큰 제한 설정 저장 실패');
+                }
+            })
+            .catch(error => console.error('오류 발생:', error));
+    }
+
+    function logout() {
+        // Implement logout functionality here
+        window.location.href = "/loginPage"; // Redirect to login page
+    }
+</script>
+
+</body>
+</html>

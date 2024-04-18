@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel File Upload</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        #uploadForm {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .btn-upload {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-upload:hover {
+            background-color: #0056b3;
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>학생 파일 명부 업로드</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".xlsx" onchange="displayFileName()">
+                <label class="custom-file-label" for="fileInput" id="fileInputLabel">파일 선택</label>
+            </div>
+            <div class="input-group-append">
+                <button type="button" class="btn btn-upload" onclick="uploadFile()">Upload</button>
+            </div>
+        </div>
+    </form>
+
+    <h2>파일 양식</h2>
+    <h3>id username phone role</h3>
+
+    <button class="btn btn-back" onclick="goBack()">뒤로가기</button>
+</div>
+
+<script>
+    function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Please select a file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert('File uploaded successfully');
+                console.log('Server response:', data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error.message);
+                alert('File upload failed. Please try again.');
+            });
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    function displayFileName() {
+        const fileInput = document.getElementById('fileInput');
+        const fileInputLabel = document.getElementById('fileInputLabel');
+        if (fileInput.files.length > 0) {
+            fileInputLabel.innerText = fileInput.files[0].name;
+        } else {
+            fileInputLabel.innerText = '파일 선택';
+        }
+    }
+</script>
+</body>
+</html>

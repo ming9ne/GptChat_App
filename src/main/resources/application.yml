@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/gpt
+    username: ENC(ufE47FTbnfiYezskOtviB7+STsT3jsPhMTIKKB1Qp7qS3g7MnV9kMzIlTaLphQZH)
+    password: ENC(lINogddNKYyw9hdOoAdM94T6RmpS2K55RJ2QqKcgmUUejcLpdP8//LV9gFu9nlFR)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+
+
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+  profiles:
+    active: multiflex-chatgpt-local
+
+
+gpt:
+  server:
+    url: https://api.openai.com/v1/chat/completions
+    userinfo: ENC(v0rpEL2QhRxc59axCWi2m+oFkNgimx/E1dl1mXz8gCUVmU8Hra9aQ5ixvhdmITmpGv4YpL3qt0VbDHOV2CpyC7i6YmaZMBprarqkFTkrXQoitTcBrqIy5VRfQRt+M4F3)
+    test : ENC(VZ1mqAnKJlN7dVKM5Fpv3v/nCrR+0KWLWAJwQFeoxPqOJAWa/n/CNLTAwQ1tsWF0)
+  chatt:
+    tokens: 500  # Num of tokens

@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-config
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation ("org.springframework.security:spring-security-config:5.6.0")
+
+
+    implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // poi
+
+    implementation group: 'org.apache.poi', name: 'poi', version: '3.9'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9'
+
+    //
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.1.4'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    //gpt
+    implementation group: 'com.theokanning.openai-gpt3-java', name: 'api', version: '0.18.2'
+    implementation group: 'com.theokanning.openai-gpt3-java', name: 'client', version: '0.18.2'
+    implementation group: 'com.theokanning.openai-gpt3-java', name: 'service', version: '0.14.0'
+
+
+
+
+
+    // JSON Simple
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+
+
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5' // 버전은 최신 버전으로 대체할 수 있습니다
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20240303'
+
+
+
+    // https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
+
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

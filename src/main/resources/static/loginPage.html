@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        #login-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #login-form input[type="text"],
+        #login-form input[type="password"],
+        #login-form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        #login-form button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #login-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div id="login-form">
+    <h2>Login</h2>
+    <input type="text" id="userId" placeholder="학번">
+    <input type="password" id="password" placeholder="비밀번호">
+    <button onclick="login()">Login</button>
+    <p id="message"></p>
+
+
+    <button onclick="window.location.href = '/signup'">회원가입</button>
+</div>
+
+<script>
+    function login() {
+        var userId = document.getElementById("userId").value;
+        var password = document.getElementById("password").value;
+
+        // AJAX를 사용하여 로그인 요청을 서버로 보냄
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/login", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // 로그인 성공 시 메인 페이지로 리디렉션
+                    window.location.href = "/main";
+                } else if (xhr.status === 401) {
+                    // 로그인 실패 메시지를 출력
+                    document.getElementById("message").innerHTML = xhr.responseText;
+                }
+            }
+        };
+        xhr.send(JSON.stringify({ userId: userId, password: password }));
+    }
+</script>
+</body>
+</html>
