@@ -54,6 +54,7 @@ Openai를 통해 여러명의 사용자가 동시에 Chat GPT-4 모델을 자유
 - 탄력성 및 확장성 보장
 
 ## 💻주요 기술
+- Jasypt를 이용한 암호화 처리 
 - Spring Security 적용 
 - MessageQueue를 사용해 메세지를 순서대로 처리
 - 여러명의 유저가 동시에 GPT-4 채팅 사용
