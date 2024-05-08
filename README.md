@@ -3,7 +3,7 @@
 #### <a href="https://sw-sth.notion.site/898e9ed7b37e4d4e8170a86defd68769">노션 프로젝트 소개</a>
 
 ## 🖥️프로젝트 소개
-#### Openai, MessageQueue를 활용한 시스템 간 통신 및 데이터 처리를 효율적으로 관리
+#### Openai, MessageQueue를 활용한 시스템 간 통신 및 데이터 처리를 효율적으로 관리</br>
 
 
 ### 주제
